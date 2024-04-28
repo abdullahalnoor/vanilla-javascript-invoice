@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Product</th>
+                        <th scope="col">QTY</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody class="tableBody">
+                      <tr>
+                        <td><input type="text" name="product" class="form-control product"></td>
+                        <td><input type="number" step="any" name="quantity" class="form-control quantity"></td>
+                        <td><input type="number" step="any" name="price" class="form-control price"></td>
+                        <td><input readonly type="number" step="any" name="total" class="form-control total"></td>
+                        <td><button disabled class="btn btn-danger removeItem">Delete</button></td>
+                      </tr>
+                     
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td><button class="btn btn-info addNew">Add New</button></td>
+                            <td colspan="4"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><b >Grand Total</b></td>
+                            <td><input readonly type="number" step="any" name="grand_total" class="form-control grandTotal"></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                  </table>
+            </div>
+          </div>
+    </div>
+
+   <script>
+    document.addEventListener("DOMContentLoaded",(event)=>{
+
+      const grandTotal = document.querySelector(".grandTotal")
+      const calculateGrandTotal = function(){
+        // console.log('ok');
+       const total = document.querySelectorAll('.total')
+       var gTotal = 0
+       total.forEach((item,index) => {
+          gTotal = parseFloat(gTotal) + parseFloat(item.value)
+       })
+        grandTotal.value = gTotal.toFixed(2)
+      }
+      // console.log("HTML doc loaded");
+      // quantity 
+      document.addEventListener("input",function(e){
+        e.preventDefault();
+        // console.log(e.target.value);
+        if(e.target.classList.contains("quantity")){
+          let itemQuantity = e.target.value;
+          // console.log(e.target.value);
+          // console.log(e.target.parentElement.nextElementSibling.children[0]);
+          let itemPrice = e.target.parentElement.nextElementSibling.children[0].value;
+          let itemTotal = parseFloat(itemQuantity) * parseFloat(itemPrice);
+          if(Number.isNaN(itemTotal)){
+            e.target.parentElement.nextElementSibling.nextElementSibling.children[0].value = 0; 
+            return false;
+          }
+          // console.log(e.target.parentElement.nextElementSibling.nextElementSibling.children[0]);
+          // console.log(itemTotal);
+          e.target.parentElement.nextElementSibling.nextElementSibling.children[0].value = itemTotal.toFixed(2); 
+          calculateGrandTotal()
+        } 
+      })// end of quantity
+
+      document.addEventListener("input",function(e){
+        e.preventDefault();
+        if(e.target.classList.contains("price")){
+          // console.log(e.target.value);
+          let itemPrice = e.target.value;
+          // console.log(e.target.parentElement.previousElementSibling.children[0].value);
+          let itemQuantity = e.target.parentElement.previousElementSibling.children[0].value;
+          let itemTotal = parseFloat(itemPrice) * parseFloat(itemQuantity);
+          // console.log(itemTotal);
+          if(Number.isNaN(itemTotal)){
+            e.target.parentElement.nextElementSibling.children[0].value = 0
+            return false;
+          }
+          // console.log(e.target.parentElement.nextElementSibling.children[0]);
+          e.target.parentElement.nextElementSibling.children[0].value = itemTotal.toFixed(2)
+          calculateGrandTotal()
+        }
+      }) // end of price
+
+      const tableBody = document.querySelector(".tableBody")
+      const addNew = document.querySelector(".addNew")
+
+      addNew.addEventListener("click",function(e){
+        // console.log('Ok');
+        e.preventDefault();
+        const html = `<tr>
+                        <td><input type="text" name="product" class="form-control product"></td>
+                        <td><input type="number" step="any" name="quantity" class="form-control quantity"></td>
+                        <td><input type="number" step="any" name="price" class="form-control price"></td>
+                        <td><input readonly type="number" step="any" name="total" class="form-control total"></td>
+                        <td><button class="btn btn-danger removeItem">Delete</button></td>
+                      </tr>`;
+                      tableBody.insertAdjacentHTML("beforeend",html)
+      })
+      
+      document.addEventListener('click',function(e){
+        e.preventDefault()
+        // console.log('Ok');
+        if(e.target.classList.contains("removeItem")){
+          console.log('Ok');
+          // console.log(e.target.parentElement.parentElement);
+          e.target.parentElement.parentElement.remove()
+          calculateGrandTotal()
+        }
+      })
+
+
+    }) // end of doc
+   </script>
+
+</body>
+</html>
